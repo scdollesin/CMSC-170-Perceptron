@@ -5,11 +5,11 @@
 # PROGRAM DESCRIPTION: 
 
 import numpy as np
+import pandas as pd
 
-def print_2d(tb):
-    for row in tb:
-        print(row)
-    print()
+def add_to_file(file, iteration, matrix):
+    file.write("Iteration: "+ str(iteration)+"\n")
+    file.write(matrix.to_string() + "\n")
 
 input = open("input.txt", "r")
 
@@ -25,16 +25,21 @@ if (input.readable()):
         for j in range(len(values[i])):
             values[i][j] = int(values[i][j])
 
-    no_of_rows = len(values)
+    input.close()
+    output = open("output.txt", "w")
 
-    print("learning rate: ", lr)
-    print("threshold: ", th)
-    print("bias: ", b)
-    print_2d(values)
+    no_of_rows = len(values)            #number of rows
+    no_of_x = len(values[i][:-1])       #number of x variables
+
+    #create column names based on the number of x variables
+    col_names = []
+    for x in range(no_of_x): col_names.append("x"+str(x))
+    col_names.append("b")
+    for w in range(no_of_x): col_names.append("w"+str(w))
+    col_names.extend(["wb", "a", "y", "z"])
 
     #initialize the table
     tb  = []
-    no_of_x = len(values[i][:-1])                 #number of x variables
 
     for i in range(no_of_rows):
         tb.append([])
@@ -67,19 +72,20 @@ if (input.readable()):
             
             tb[row][y] = 1 if (tb[row][a] >= th) else 0    #determine value of y
         
-        print("  x0  x1   b  w0  w1  wb  a   y  z")
-        print(np.matrix(tb))
+        matrix = pd.DataFrame(np.matrix(tb), columns=col_names)
+        print(matrix)
+        add_to_file(output, iteration, matrix)
         iteration = iteration + 1
 
         equal = []
         for x in range(no_of_x+1):
             weights = []
-            for row in range(1,no_of_rows+1):
-                weights.append(tb[row][x+no_of_x+1])            
-            equal.append(all(w == weights[0] for w in weights))
+            for row in range(1,no_of_rows+1):                
+                weights.append(tb[row][x+no_of_x+1])    #collect all xn weights in a list     
+            equal.append(all(w == weights[0] for w in weights))     #check if xn's weights are all equal
 
         if all(equal):
-            converged = True
+            converged = True    #if weights of all x variables have converged, stop iterating
         else:
             for x in range(no_of_x+1):
                 tb[0][x+no_of_x+1] = tb[no_of_rows][x+no_of_x+1]      #replace initial values
