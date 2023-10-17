@@ -49,20 +49,47 @@ if (input.readable()):
 
     y = len(tb[0])-2    #index of y column
     a = len(tb[0])-3    #index of a column
+    converged = False
+    iteration = 1
     
-    for row in range(no_of_rows+1):
-        #adjust weights if not the first row
-        if (row > 0):
-            for w in range(no_of_x+1):
-                tb[row][w+no_of_x+1] = tb[row-1][w+no_of_x+1] + (lr*tb[row-1][w]*(tb[row-1][-1]-tb[row-1][y]))     #compute for adjusted weight
-                #if(row == 2): print(tb[row-1][w+no_of_x+1], " + ", lr , " * ", tb[row-1][w], " * ", tb[row-1][-1], " - ", tb[row-1][y], " = ", tb[row][w+no_of_x+1])
+    while (not converged):
+        print("Iteration: ", iteration)
+        for row in range(no_of_rows+1):
+            #adjust weights if not the first row
+            if (row > 0):
+                for w in range(no_of_x+1):
+                    tb[row][w+no_of_x+1] = tb[row-1][w+no_of_x+1] + (lr*tb[row-1][w]*(tb[row-1][-1]-tb[row-1][y]))     #compute for adjusted weight
+                    #if(row == 2): print(tb[row-1][w+no_of_x+1], " + ", lr , " * ", tb[row-1][w], " * ", tb[row-1][-1], " - ", tb[row-1][y], " = ", tb[row][w+no_of_x+1])
 
+            for x in range(no_of_x+1):
+                tb[row][a] = tb[row][a] + (tb[row][x]*tb[row][x+no_of_x+1])     #compute for a
+                # if(row == 2): print(tb[row][x], " * ", tb[row][x+no_of_x+1], " = ",tb[row][x]*tb[row][x+no_of_x+1] )
+            
+            tb[row][y] = 1 if (tb[row][a] >= th) else 0    #determine value of y
+        
+        print("  x0  x1   b  w0  w1  wb  a   y  z")
+        print(np.matrix(tb))
+        iteration = iteration + 1
+
+        equal = []
         for x in range(no_of_x+1):
-            tb[row][a] = tb[row][a] + (tb[row][x]*tb[row][x+no_of_x+1])     #compute for a
-            #if(row == 2): print(tb[row][x], " * ", tb[row][x+no_of_x+1])
+            weights = []
+            for row in range(1,no_of_rows+1):
+                weights.append(tb[row][x+no_of_x+1])            
+            equal.append(all(w == weights[0] for w in weights))
+
+        if all(equal):
+            converged = True
+        else:
+            for x in range(no_of_x+1):
+                tb[0][x+no_of_x+1] = tb[no_of_rows][x+no_of_x+1]      #replace initial values
+            for row in range(no_of_rows):
+                tb[row][a] = 0     #reset y and a values to 0
+                tb[row][y] = 0
+
+
+    
+
         
-        tb[row][y] = 1 if (tb[row][a] >= th) else 0    #determine value of y
         
-        
-    print("  x0  x1   b  w0  w1  wb  a   y  z")
-    print(np.matrix(tb))
+
