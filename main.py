@@ -73,8 +73,9 @@ if (input.readable()):
             
             tb[row][y] = 1 if (tb[row][a] >= th) else 0    #determine value of y
         
-        matrix = pd.DataFrame(np.matrix(tb), columns=col_names)
-        print(matrix)
+
+        print(pd.DataFrame(np.matrix(tb), columns=col_names))
+        matrix = pd.DataFrame(np.matrix(tb[:-1]), columns=col_names)
         add_to_file(output, iteration, matrix)
         iteration = iteration + 1
 
