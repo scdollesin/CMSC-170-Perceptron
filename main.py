@@ -2,11 +2,12 @@
 # AUTHOR: Samantha Shane C. Dollesin
 # STUDENT NO.: 2020-01893
 # SECTION: WX-1L
-# PROGRAM DESCRIPTION: 
+# PROGRAM DESCRIPTION: This program takes an input file, performs linear classification using perceptrons and writes the results on an output file.
 
 import numpy as np
 import pandas as pd
 
+#this function writes an iteration onto the output file
 def add_to_file(file, iteration, matrix):
     file.write("Iteration: "+ str(iteration)+"\n")
     file.write(matrix.to_string() + "\n")
@@ -64,11 +65,11 @@ if (input.readable()):
             if (row > 0):
                 for w in range(no_of_x+1):
                     tb[row][w+no_of_x+1] = tb[row-1][w+no_of_x+1] + (lr*tb[row-1][w]*(tb[row-1][-1]-tb[row-1][y]))     #compute for adjusted weight
-                    #if(row == 2): print(tb[row-1][w+no_of_x+1], " + ", lr , " * ", tb[row-1][w], " * ", tb[row-1][-1], " - ", tb[row-1][y], " = ", tb[row][w+no_of_x+1])
+                    # if(row == 1): print(tb[row-1][w+no_of_x+1], " + ", lr , " * ", tb[row-1][w], " * ", tb[row-1][-1], " - ", tb[row-1][y], " = ", tb[row][w+no_of_x+1])
 
             for x in range(no_of_x+1):
                 tb[row][a] = tb[row][a] + (tb[row][x]*tb[row][x+no_of_x+1])     #compute for a
-                # if(row == 2): print(tb[row][x], " * ", tb[row][x+no_of_x+1], " = ",tb[row][x]*tb[row][x+no_of_x+1] )
+                # if(row == 1): print(tb[row][x], " * ", tb[row][x+no_of_x+1], " = ",tb[row][x]*tb[row][x+no_of_x+1] )
             
             tb[row][y] = 1 if (tb[row][a] >= th) else 0    #determine value of y
         
@@ -92,10 +93,3 @@ if (input.readable()):
             for row in range(no_of_rows):
                 tb[row][a] = 0     #reset y and a values to 0
                 tb[row][y] = 0
-
-
-    
-
-        
-        
-
